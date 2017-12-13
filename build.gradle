@@ -5,6 +5,7 @@ buildscript {
         hibernateVersion = "5.0.11.Final"
         slf4jVersion = "1.7.21"
         junitVersion = "4.12"
+        mysqlVersion = "5.1.40"
     }
 
     repositories {
@@ -35,21 +36,44 @@ task dependenciesGraphDot {
                 Configuration compileConfig = subProject.configurations["compile"]
 
                 compileConfig
-                    .dependencies
-                    .grep { it.respondsTo("getDependencyProject") }
-                    .forEach { dotFile << """  "$subProject.name" -> "$it.dependencyProject.name"\n""" }
+                        .dependencies
+                        .grep { it.respondsTo("getDependencyProject") }
+                        .forEach { dotFile << """  "$subProject.name" -> "$it.dependencyProject.name"\n""" }
             } catch (UnknownConfigurationException ignored) {
             }
         }
         dotFile << "}\n"
     }
 }
-
 task dependenciesGraph(dependsOn: "dependenciesGraphDot", type: Exec) {
     workingDir "$project.buildDir/dependenciesGraph"
     commandLine "dot", "-O", "-Tpng", "graph.dot"
 }
-
 task clean(type: Delete) {
     delete "build"
+}
+defaultTasks "clean", "build", "dependenciesGraph"
+task deploy {
+    doLast {
+        println "cf push".execute().text
+    }
+}
+task setupPcfEnv {
+    doLast {
+        [
+                "cf create-service p-mysql 100mb movie-database",
+                "cf create-service p-mysql 100mb album-database",
+        ].each { println it.execute().text }
+    }
+}
+task teardownPcfEnv {
+    doLast {
+        [
+                "cf delete -f album-service",
+                "cf delete -f movie-service",
+                "cf delete -f movie-fun-app",
+                "cf delete-service -f movie-database",
+                "cf delete-service -f album-database",
+        ].each { println it.execute().text }
+    }
 }

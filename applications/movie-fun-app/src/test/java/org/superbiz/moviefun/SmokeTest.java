@@ -38,6 +38,9 @@ public class SmokeTest {
             baseUrl = envUrl;
         }
 
-        return baseUrl + path;
+        String output = baseUrl + path;
+
+        System.out.println("LOGGER: smokeTest url: "+output);
+        return output;
     }
 }

@@ -11,6 +11,10 @@ applications:
   - album-database
   env:
     GRANT_TYPE: client_credentials
+    S3_ACCESSKEY: AKIAIIZFP5JMTJPVCMTA
+    S3_BUCKETNAME: cf-9d960ec4-df5d-4d15-97a6-581ab11b129a
+    S3_ENDPOINTURL: http://s3.amazonaws.com
+    S3_SECRETKEY: T3XK9yT3x+vYRzG0COGmS9+/6flEIjzfOB4MS0Rr
 - name: movie-service
   path: applications/movie-service/build/libs/movie-service-1.1.0-SNAPSHOT.jar
   services:
@@ -18,4 +22,11 @@ applications:
   env:
     GRANT_TYPE: client_credentials
 - name: movie-fun-app
+  env:
+    S3_ACCESSKEY: AKIAIIZFP5JMTJPVCMTA
+    S3_BUCKETNAME: cf-9d960ec4-df5d-4d15-97a6-581ab11b129a
+    S3_ENDPOINTURL: http://s3.amazonaws.com
+    S3_SECRETKEY: T3XK9yT3x+vYRzG0COGmS9+/6flEIjzfOB4MS0Rr
   path: applications/movie-fun-app/build/libs/movie-fun-app-1.1.0-SNAPSHOT.war
+  services:
+  - movie-fun-config

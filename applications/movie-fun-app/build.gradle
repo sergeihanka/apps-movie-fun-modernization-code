@@ -35,5 +35,7 @@ dependencies {
 
     compile "org.apache.tomcat.embed:tomcat-embed-jasper:8.5.6"
 
+    compile "io.pivotal.spring.cloud:spring-cloud-services-starter-circuit-breaker"
+
     testCompile "junit:junit:$junitVersion"
 }

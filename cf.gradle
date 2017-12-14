@@ -4,6 +4,7 @@ def services = [
     [type: "p-identity", plan: "p-identity", instance: "movie-fun-sso"],
     [type: "p-service-registry", plan: "standard", instance: "movie-fun-registry"],
     [type: "p-config-server", plan: "standard", instance: "movie-fun-config", config: "config-server.json"],
+    [type: "p-circuit-breaker-dashboard", plan: "standard", instance: "movie-fun-circuit-breaker"],
 ]
 
 task teardownPcfEnv {

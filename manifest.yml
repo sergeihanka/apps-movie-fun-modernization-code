@@ -3,6 +3,7 @@ memory: 1G
 instances: 1
 services:
 - movie-fun-sso
+- movie-fun-registry
 applications:
 - name: album-service
   path: applications/album-service/build/libs/album-service-1.1.0-SNAPSHOT.jar
@@ -10,14 +11,21 @@ applications:
   - album-database
   env:
     GRANT_TYPE: client_credentials
+    S3_ENDPOINTURL: http://s3.amazonaws.com
+  routes:
+    - route: album-service-sergei-hanka.apps.longs.pal.pivotal.io
 - name: movie-service
   path: applications/movie-service/build/libs/movie-service-1.1.0-SNAPSHOT.jar
   services:
   - movie-database
   env:
     GRANT_TYPE: client_credentials
+    S3_ENDPOINTURL: http://s3.amazonaws.com
+  routes:
+      - route: movie-service-sergei-hanka.apps.longs.pal.pivotal.io
 - name: movie-fun-app
   path: applications/movie-fun-app/build/libs/movie-fun-app-1.1.0-SNAPSHOT.war
   env:
-    ALBUMS_URL: http://album-service.cfapps-02.haas-66.pez.pivotal.io/albums
-    MOVIES_URL: http://movie-service.cfapps-02.haas-66.pez.pivotal.io/movies
+      S3_ENDPOINTURL: http://s3.amazonaws.com
+  routes:
+      - route: movie-fun-app-sergei-hanka.apps.longs.pal.pivotal.io

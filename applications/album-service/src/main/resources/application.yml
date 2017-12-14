@@ -16,3 +16,7 @@ s3:
   accessKey: <access key id>
   secretKey: <secret access key>
   bucketName: <name of the bucket>
+
+security:
+    basic:
+        enabled: false

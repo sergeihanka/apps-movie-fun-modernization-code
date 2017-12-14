@@ -11,3 +11,7 @@ spring:
 logging.level:
   root: WARN
   org.superbiz.moviefun: DEBUG
+
+security:
+    basic:
+        enabled: false

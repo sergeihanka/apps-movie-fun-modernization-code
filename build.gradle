@@ -2,6 +2,10 @@ buildscript {
     ext {
         springBootVersion = "1.4.2.RELEASE"
         springVersion = "4.3.4.RELEASE"
+        springCloudVersion = "Camden.SR3"
+        springCloudSsoVersion = "1.1.0.RELEASE"
+        springSecurityVersion = "4.1.3.RELEASE"
+
         hibernateVersion = "5.0.11.Final"
         slf4jVersion = "1.7.21"
         junitVersion = "4.12"
@@ -14,6 +18,7 @@ buildscript {
 
     dependencies {
         classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
+        classpath "io.spring.gradle:dependency-management-plugin:0.6.1.RELEASE"
     }
 }
 
@@ -36,50 +41,48 @@ task dependenciesGraphDot {
                 Configuration compileConfig = subProject.configurations["compile"]
 
                 compileConfig
-                    .dependencies
-                    .grep { it.respondsTo("getDependencyProject") }
-                    .forEach { dotFile << """  "$subProject.name" -> "$it.dependencyProject.name"\n""" }
+                        .dependencies
+                        .grep { it.respondsTo("getDependencyProject") }
+                        .forEach { dotFile << """  "$subProject.name" -> "$it.dependencyProject.name"\n""" }
             } catch (UnknownConfigurationException ignored) {
             }
         }
         dotFile << "}\n"
     }
 }
-
 task dependenciesGraph(dependsOn: "dependenciesGraphDot", type: Exec) {
     workingDir "$project.buildDir/dependenciesGraph"
     commandLine "dot", "-O", "-Tpng", "graph.dot"
 }
-
 task clean(type: Delete) {
     delete "build"
 }
-
 defaultTasks "clean", "build", "dependenciesGraph"
-
 task deploy {
     doLast {
-        println "cf push".execute().text
+        "cf push".execute().in.eachLine { line ->
+            println line
+        }
     }
 }
-
 task setupPcfEnv {
     doLast {
         [
-            "cf create-service p-mysql 100mb movie-database",
-            "cf create-service p-mysql 100mb album-database",
+                "cf create-service p-mysql 100mb movie-database",
+                "cf create-service p-mysql 100mb album-database",
+                "cf create-service p-identity p-identity movie-fun-sso",
         ].each { println it.execute().text }
     }
 }
-
 task teardownPcfEnv {
     doLast {
         [
-            "cf delete -f album-service",
-            "cf delete -f movie-service",
-            "cf delete -f movie-fun-app",
-            "cf delete-service -f movie-database",
-            "cf delete-service -f album-database",
+                "cf delete -f album-service",
+                "cf delete -f movie-service",
+                "cf delete -f movie-fun-app",
+                "cf delete-service -f movie-database",
+                "cf delete-service -f album-database",
+                "cf delete-service -f movie-fun-sso",
         ].each { println it.execute().text }
     }
 }
